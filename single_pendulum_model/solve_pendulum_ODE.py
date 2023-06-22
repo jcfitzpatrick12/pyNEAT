@@ -59,10 +59,13 @@ T = 5
 #take n_t equidistant samples of the solution in time
 n_t = T*20
 #consider an initial position
-y0 = [np.pi/50, 0.0] #this is a list NOT an ara xxxx
+y0 = [np.pi/50, 0.0] #this is a list NOT an array
 #which base movement function are we requesting? ['oscil']
 X_t_string = 'oscil_decay'
+
+##########################################
 ######## END OF USER INPUTS ##############
+##########################################
 
 #call the solution at 101 evenly spaced intervals for 10 seconds
 t = np.linspace(0, T, n_t)
