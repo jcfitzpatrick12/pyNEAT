@@ -5,10 +5,6 @@ create a function that generates the adjacency matrix
 
 Not concerned with efficient programming yet!
 
-todo:
--"default" settings such as mutation probabilities in a seperate class. W
-
-
 '''
 
 #import numpy
@@ -17,16 +13,9 @@ import numpy as np
 from genome_functions import genome_functions
 #import the class that defines the genome of each network
 from genome import genome
-#import the test node genome class
-from test_genome_example import test_genome_example
-
-'''
-feed forward parameters
-'''
-#tolerance to which we terminate the network
-tol=10e-6
-#activation function ['linear','exponential']
-requested_activation_function = 'linear'
+#import the testing classes
+from test_feedforward_example import test_feedforward_example
+from test_mutation_example import test_mutation_example
 
 
 ####################
@@ -34,7 +23,10 @@ requested_activation_function = 'linear'
 ####################
 
 #invoking the test handcomputed example
-test_genome_example().test_feedforward()
+#test_feedforward_example().test()
+test_mutation_example().test_single_mutation()
+
+
 
 
 

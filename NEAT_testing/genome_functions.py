@@ -5,8 +5,11 @@ import numpy as np
 #import our available activation functions
 from activation_functions import activation_functions
 #import the class that organises the system variables
-from system_variables import system_variables
-
+from sys_vars import sys_vars
+#import the genome class
+from genome import genome
+#set the random seed
+np.random.seed(7)
 '''
 Define the class which handles operations on a single genome defined by connection_genes and node_genes.
 Functions include
@@ -14,10 +17,11 @@ Functions include
 -mutate (which mutates the genome according to input probabilites)
 '''
 
-#genome functions takes a defined genome as an input (which is itself a class object)
+#genome functions takes an input genome as an input (which is a class object)
 class genome_functions:
-    def __init__(self,genome):
-        self.genome=genome
+    def __init__(self,input_genome):
+        self.input_genome=input_genome
+        self.sys_vars = sys_vars()
     '''
     feedforward functions
     -defining different activation functions
@@ -34,15 +38,15 @@ class genome_functions:
     #requested activation function is a user defined string
     def feedforward(self,input_vector,tol,requested_activation_function):
         #to reduce clutter, extracting the node and connection genese from the input genome
-        node_genes= self.genome.node_genes
-        connection_genes = self.genome.connection_genes
+        node_genes= self.input_genome.node_genes
+        connection_genes = self.input_genome.connection_genes
         #extracting the points of the connected edges
         target_nodes = connection_genes[:,1]
         #find the output node indices
         #we will use this in the loop
-        output_node_inds=self.genome.find_output_node()
+        output_node_inds=self.input_genome.find_output_node()
         #finding the number of total nodes
-        num_total_nodes =self.genome.num_total_nodes
+        num_total_nodes =self.input_genome.num_total_nodes
         #first check if the input vector is of the same dimension as the input nodes
         num_input_neurons = len(node_genes[node_genes[:,1]<0])
         if len(input_vector)!=num_input_neurons:
@@ -100,10 +104,93 @@ class genome_functions:
     
     #mutates a single network according to the paper
     #mutation variables are stored in system variables
-    #returns a new genome (class object)
+    
+    #takes in an (arb)itrary input genome and returns a genome with mutated weights
+    def mutate_weights(self,arb_genome):
+        #to reduce clutter, extracting the node and connection genese from the input genome
+        node_genes= arb_genome.node_genes
+        connection_genes = arb_genome.connection_genes
+        '''
+        first decide whether the weights of this network will be perturbed or not
+        '''
+        #manually set rv right now to make sure we adjust the weights
+        rv = np.random.uniform(low=0.0, high=1.0, size=None)
+        #rv=0.4
+        #decide whether we will perturb the weights for this network
+        if rv>self.sys_vars.probability_weight_perturbed:
+            #if we the weights are not perturbed simply pass
+            pass
+        #otherwise perturb the weights
+        else:
+            #extract the weights from the connection genes
+            weights = connection_genes[:,2]
+            #The random variable should be drawn FOR EACH WEIGHT
+            rvs = np.random.uniform(low=0.0,high=1.0,size=np.shape(weights))
+            #again, for now just manually set the random variables
+            #rvs = np.array([0.1,0.91,0.5])
+            #create an array of bools which will store whether the weight will be randomly perturbed or not
+            boole = np.ones(np.shape(weights))
+            #stores one for uniformly perturb, zero for assign a new value
+            boole[rvs>self.sys_vars.probability_uniform_weight_perturbation]*=0
+            #redefine boole as a boolean array
+            boole_weights_uniformly_perturbed=np.array(boole,dtype=bool)
+            #create uniform perturbations of ALL WEIGHTS
+            uniformly_perturbed_weights = weights + np.random.uniform(-self.sys_vars.uniform_perturbation_radius,self.sys_vars.uniform_perturbation_radius,size=np.shape(weights))
+            #create assigned new values of ALL WEIGHTS
+            randomly_assigned_new_weights = np.random.uniform(self.sys_vars.weight_range[0],self.sys_vars.weight_range[1],size=np.shape(weights))
+            #then simply np.multiply them with their respective boolean arrays and element-wise sum to obtain the result
+            #the result being that each weight is now either uniformly perturbed or assigned a new value based on its 
+            #drawn random variable
+            new_weights = np.multiply(randomly_assigned_new_weights,~boole_weights_uniformly_perturbed)+np.multiply(uniformly_perturbed_weights,boole_weights_uniformly_perturbed)
+
+        #reassign the new_weights
+        connection_genes[:,2]=new_weights
+        #redefine the genome to have the new weights, and return
+        mutated_weights_genome = genome(node_genes,connection_genes)
+        return mutated_weights_genome
+    
     def mutate(self):
-        node_genes = self.genome.node_genes
-        connection_genes = self.genome.connection_genes
+        
+        #mutate the weights of the input genome
+        mutated_weights_genome = self.mutate_weights(self.input_genome)
+        #decide whether we will then mutate and add nodes
+        mutate_add_nodes_genome = self.mutate_weights(mutated_weights_genome)
+        #print(mutated_weights_genome().connection_genes)
+        #self.mutate_add_link(self.genome)
+        #self.mutate_add_node(self.genome)
+        pass 
+    
+    '''
+    #takes in an (arbitrary) input genome and decides whether to add a node during that mutation
+    def mutate_add_node(self,genome):
+        #to reduce clutter, extracting the node and connection genese from the input genome
+        node_genes= genome.node_genes
+        connection_genes = genome.connection_genes
+
+        #draw another single random variable to evaluate whether we will add another hidden node
+        #rv = np.random.uniform(low=0,high=1,size=None)
+        rv = 0.02
+        #print(node_genes)
+        if rv<self.sys_vars.probability_add_node:
+            #create a new numpy array to hold the new nodes
+            new_node_genes = np.empty((self.genome.num_total_nodes+1,2))
+            #copy old nodes into new nodes
+            new_node_genes[:-1,:]=node_genes
+            #add a new HIDDEN node
+            new_node_genes[-1,:]=np.array([self.genome.num_total_nodes,0])
+            #reassign node_genes to be new_node_genes
+            
+        print(new_node_genes)
+        #for now just return the original genome
+        mutated_genome=self.genome
+        return mutated_genome
+    
+    def mutate_add_link(self,):
+        pass
+        
+    '''
+    
+
 
 
 

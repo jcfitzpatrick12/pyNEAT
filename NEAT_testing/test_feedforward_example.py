@@ -8,7 +8,8 @@ from genome_functions import genome_functions
 #import the class that defines the genome of each network
 from genome import genome
 
-class test_genome_example:
+class test_feedforward_example:
+
     def __init__(self):
         '''
         Hard code in some networks for verification
@@ -26,12 +27,10 @@ class test_genome_example:
         #the hand computed outputs of node 1 and 2
         self.correct_output = np.array([4.19,0.96])
 
-    def test_feedforward(self):
+    def test(self):
         #creating a test genome
         test_genome = genome(self.test_node_genes,self.test_connection_genes)
-        #genome handles the operations on the network, given the defined node and connection genes.
-        #recall, tol is our "stability" parameter.
-        #genome holds functions that compute the 
+        #genome_functions handles the operations on the network, given the defined genome
         test_genome_functions = genome_functions(test_genome)
         '''
         testing the feedforward function
@@ -39,6 +38,7 @@ class test_genome_example:
         #find the output of our neural network given our input vector
         output_vector=test_genome_functions.feedforward(self.test_input_vector,10e-6,'linear')
         print(f'The correct output is: {self.correct_output}. The computed output is {output_vector}')
+        #if the computed output is (to a very small tolerance) identical to the correct output
         if np.abs(np.sum(self.correct_output-output_vector)) < 10e-10:
             print('Feedforward verified.')
         else:
