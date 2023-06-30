@@ -6,6 +6,7 @@ import numpy as np
 from genome import genome_builder
 #import genome functions which holds the functions which act on a single genome
 from genome_functions import genome_functions
+from visualise_genome import visualise_genome
 
 
 class test_feedforward_example:
@@ -20,11 +21,21 @@ class test_feedforward_example:
         self.test_node_genes = np.array([[0,-1],[1,1],[2,1],[3,0],[4,0],[5,0]])
         #hard code in the connection genes of a simple pre-defined neural network
         #our connection gene convention is of the form [source_node_index,target_node_index,weight,enable_bit,innovation_number]
-        self.test_connection_genes = np.array([[0,3,0.3,1,0],[0,4,0.4,1,1],[0,5,0.5,1,2],[3,2,3.2,1,3],[4,1,4.1,1,4],[5,1,5.1,1,5]])
+        self.test_connection_genes = np.array([[0,3,0.3,1],[0,4,0.4,1],[0,5,0.5,1],[3,2,3.2,1],[4,1,4.1,1],[5,1,5.1,1]])
         #input vector to the NN (one for each input node)
         self.test_input_vector = np.array([1])
         #the hand computed outputs of node 1 and 2
         self.correct_output = np.array([4.19,0.96])
+        
+        '''
+        Hard code in another test case with recurrent connectionss
+        '''
+        self.test_node_genes_2 = np.array([[0,-1],[1,1],[2,1],[3,0],[4,0],[5,0]])
+        #hard code in the connection genes of a simple pre-defined neural network
+        #our connection gene convention is of the form [source_node_index,target_node_index,weight,enable_bit,innovation_number]
+        self.test_connection_genes_2 = np.array([[0,3,0.3,1],[0,4,0.4,1],[0,5,0.5,1],[3,2,3.2,1],[4,1,4.1,1],[5,1,5.1,1],[3,4,1.5,1]])
+        #input vector to the NN (one for each input node)
+        self.test_input_vector_2 = np.array([1])
 
     def test(self):
         #creating a test genome 
@@ -44,4 +55,16 @@ class test_feedforward_example:
         else:
             raise ValueError(f'Feedforward not verified: Expected {self.correct_output}, got {output_vector}')       
 
+        pass
+
+    def test_recurrent(self):
+        #creating a test genome 
+        test_genome = genome_builder().build_genome(self.test_node_genes_2,self.test_connection_genes_2,num_nodes = 8)
+        visualiser = visualise_genome(test_genome)
+        visualiser.plot_network()
+        #create the class which handles functions on this genome
+        test_genome_functions = genome_functions(test_genome)
+        #find the output of our neural network given our input vector
+        output_vector=test_genome_functions.feedforward(self.test_input_vector,10e-6,'linear')
+        print(output_vector)
         pass

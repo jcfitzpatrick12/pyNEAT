@@ -16,7 +16,8 @@ class visualise_genome:
         adj_mat = np.multiply(self.genome_toplot.connection_weights, self.genome_toplot.connection_enable_bits)
         #round the weights for neat plotting
         adj_mat=np.round(adj_mat,2)
-
+        #convert all nan values to zeros for plotting
+        adj_mat[np.isnan(adj_mat)]=0
         # Create DiGraph from the adjacency matrix
         G = nx.from_numpy_matrix(adj_mat, create_using=nx.DiGraph)
 
@@ -43,6 +44,9 @@ class visualise_genome:
 
         # Draw edge labels using the axes object and the list of labels
         nx.draw_networkx_edge_labels(G, pos=layout, edge_labels=labels, ax=ax)
+
+        plt.show()
+        
 
     def plot_network(self):
         self.see_network()

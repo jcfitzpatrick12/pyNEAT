@@ -6,8 +6,7 @@ from genome_functions import genome_functions
 from genome import genome_builder
 #import the class that defines the genome of each network
 from genome import genome
-#import the rough visualisation code
-from visualise_genome import visualise_genome
+
 
 class test_mutation_example:
     def __init__(self):
@@ -23,14 +22,12 @@ class test_mutation_example:
         self.test_node_genes = np.array([[0,-1],[1,-1],[2,-1],[3,1]])
         #hard code in the connection genes of a simple pre-defined neural network
         #our connection gene convention is of the form [source_node_index,target_node_index,weight,enable_bit,innovation_number]
-        self.test_connection_genes = np.array([[0,3,0.3,1,0],[1,3,1.3,1,1],[2,3,2.3,1,2]])
+        self.test_connection_genes = np.array([[0,3,0.3,1],[1,3,1.3,1],[2,3,2.3,1]])
 
     def test_single_mutation(self):
         #creating a test genome 
-        test_genome = genome_builder().build_genome(self.test_node_genes,self.test_connection_genes,num_nodes=6)
-        #visualise the genome before mutation
-        #visualiser = visualise_genome(test_genome)
-        #visualiser.plot_network()
+        test_genome = genome_builder().build_genome(self.test_node_genes,self.test_connection_genes,num_nodes=7)
+        #test_genome = genome_builder().build_genome(self.test_node_genes,self.test_connection_genes)
         #genome_functions handles the operations on the network, given the defined genome
         test_genome_functions = genome_functions(test_genome)
         '''
@@ -38,7 +35,4 @@ class test_mutation_example:
         '''
         #test the mutation function
         mutated_genome = test_genome_functions.mutate()
-        #visualise the genome after a single mutation
-        visualiser = visualise_genome(mutated_genome)
-        visualiser.plot_network()
-        pass
+        return mutated_genome
