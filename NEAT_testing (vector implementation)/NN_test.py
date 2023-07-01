@@ -14,21 +14,19 @@ To add
 '''
 
 import numpy as np
+from test_genome_example import test_genome_example
 from test_feedforward_example import test_feedforward_example
 from test_mutation_example import test_mutation_example
-from test_genome_example import test_genome_example
-from genome import genome_builder
-from genome_functions import genome_functions
-from visualise_genome import visualise_genome
+from feedforward import feedforward
 
 
 '''
 mutation unit testing for a single network
 '''
-#test_genome_example().test()
-#test_feedforward_example().test()
-#test_feedforward_example().test_recurrent()
+test_genome_example().test()
+test_feedforward_example().test()
+test_feedforward_example().test_recurrent()
 mutated_genome = test_mutation_example().test_single_mutation()
 #test the mutated_genome for a feedforward
-#output_vector= genome_functions(mutated_genome).feedforward([1,1,1],10e-6,'linear')
-#print(output_vector)
+output_vector= feedforward().timestep_propagation(mutated_genome,[0.3,0.5,0.8],10e-6,'linear')
+print(output_vector)

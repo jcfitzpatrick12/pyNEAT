@@ -8,7 +8,7 @@ class sys_vars:
         mutation variables
         '''
         #the  range from which weights can be sampled
-        self.weight_range=[0,1]
+        self.weight_range=[-1,1]
         #the probability that a genomes weights will be perturbed
         self.probability_weight_perturbed = 0.8
         #each weight has this probability of it's weights being uniformly perturbed

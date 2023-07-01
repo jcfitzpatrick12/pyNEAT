@@ -1,8 +1,21 @@
 '''
-Class which handles genome functions
+Class which handles defined genomes.
 
-Expanded from NEAT testing to include
--conversion from hardcoded connections into adjacency form (given a maximum size with in mind vector operations with other genomes)
+We use an adjacency-like form to store our networks.
+Each node gene holds two descriptors: node label, node enable bit
+Each connection gene holds three descriptors: edge weight, edge enable bit, innovation number.
+
+the i,jth connection gene in connection_genes holds a vector composing of  (edge weight, edge enable bit, innovation number)
+the ith node gene in node_genes holds a vector composing of node index,node label, node enable bit
+
+The node enable bit allows us to perform vector computations on multiple networks which may have differnt numbers of nodes.
+
+ALL edges are accounted for in the adjacency matrix, with the enable bits telling us which nodes and edges are enabled in a particular network.
+-if source and target are enabled nodes we have edge_weight,edge_enable bit are both defined numbers (non-nan)
+-the innovation number is only an integer if that edge has been assigned at some point. Otherwise the innovation number is NAN to indicate
+ that edge has not yet been assigned. This is to stop multiple edges having zero innovation number.
+-if either the source or the target node is disabled ALL connection gene descriptors are nan.
+
 '''
 
 import numpy as np
@@ -24,17 +37,14 @@ class genome:
         self.adjacency_matrix = self.connection_enable_bits
         #return the adjacency matrix where each entry is the innovation number of that edge 
         self.connection_innov_numbers = self.connection_genes[:,:,2]
-
         #return the 'standard' adjacency matrix
         #self.adjacency_matrix = self.connection_weights/self.connection_weights
         #returns the node genese as a whole
         self.node_genes = node_genes
-        #returns the index of each node
-        self.node_indices = self.node_genes[:,0]
         #returns the label of each node (at that index) input:-1, hidden:0,output:1
-        self.node_labels = self.node_genes[:,1]
+        self.node_labels = self.node_genes[:,0]
         #returns whether that node is enabled
-        self.node_enable_bits = self.node_genes[:,2]
+        self.node_enable_bits = self.node_genes[:,1]
 
     #returns the indices of the output neurons
     def find_output_nodes(self):
@@ -62,7 +72,6 @@ class genome:
     #one function to find all nodes
     #default type is global max (sum of enabled and disabled nodes)
     def num_nodes(self,**kwargs):
-
         default_type = 'global_max'
         requested_num_nodes = kwargs.get('type',default_type)
 
@@ -143,7 +152,9 @@ class genome:
             #re-convert into a tuple
             connection_tup = tuple(connection_tup_array)
             #note, for convenience node_tup can be derived from connection tup
-            node_tup = connection_tup[1:]
+            node_tup_array = connection_tup_array[1:]
+            node_tup_array[1]-=1
+            node_tup = tuple(node_tup_array)
             '''
             creating the padded_connection_genes
             '''
@@ -160,95 +171,9 @@ class genome:
             creating the padded node_genes
             '''
             padded_node_genes = np.zeros((node_tup))
-            #label each node
-            padded_node_genes[:,0] = np.arange(num_nodes)
             #place in the old node genes
             padded_node_genes[:num_global_max_nodes]=self.node_genes
-
             #build the sliced genome
             padded_genome = genome(padded_node_genes,padded_connection_genes)
             return padded_genome
 
-
-
-
-        
-        
-
-        
-
-
-
-
-
-'''
-Important (rough) notes on connection gene and node gene values
-an enabled node has enable bit 1
-a disabled node has enable bit 0
-this will allow us to consider that all networks are "of the same shape" even if they have a differing number of nodes
-
-the connection genes whose target or source is a disabled node has all descriptors (weight, enable bit, innovation) to be nan
-the enable bit in this case is set to nan to distinguish between nodes which "exist" for a particular network
-for example in the add link mutation, we need to be able to tell which linkes we are "allowed" to connect to each other!
-
-the connection genes whose target and source are enabled has non-nan weight and enable bits
-# if the node is enabled and the edge is not yet enabled it may be enabled in mutate_add_link!
-#however, unless that edge is specifically asked for, it will have nan innovation number
-#this is so that the "not yet specified" edges don't also have zero innovation number (only one edge may have zero innovation number for a single network)
-
-
-
-'''
-
-#given a hard coded neural network, create a genome object (in adjacency form which is our 'default format' of a genome)
-class genome_builder:
-    def build_genome(self,requested_node_genes,requested_connection_genes,**kwargs):
-        #default number of nodes are those which are requested
-        default_num_nodes = len(requested_node_genes[:,0])
-        #however, we can specify a GREATER number of nodes to allow for vector calculations later on
-        #this will mean all of our node gene arrays are of the same shape (even if different networks have different numbers of nodes!)
-        num_nodes = kwargs.get('num_nodes',default_num_nodes)
-        '''
-        first build the node genes
-        '''
-        #we have three entries in the last axis: the index of the node, the nodes labels, and whether that node is enabled
-        node_genes = np.zeros((num_nodes,3))
-        #label each node
-        node_genes[:,0] = np.arange(num_nodes)
-        #label all the requested nodes
-        #NOTE all disabled nodes are automatically labelled as hidden by default
-        node_genes[:default_num_nodes,1]=requested_node_genes[:,1]
-        #enable all the requested nodes, and keep others disabled
-        node_genes[:default_num_nodes,2]=np.ones((default_num_nodes))
-
-        '''
-        now build the connection genes
-        -define an adjaceency-like matrix of the network
-        -which (equivalently to below) assigns each entry to vector which contains
-        -the weight of that edge (zero if it does not exist)
-        -enable bit
-        -innovation number
-        '''
-        #first axis denotes the source node, second axis denotes the target node and the 3 entries on the last axis are defined above
-        connection_genes = np.zeros((num_nodes,num_nodes,3))
-        #set ALL descriptors of connection_genes outwith default_num_nodes to be initially nan valued
-        connection_genes[default_num_nodes:,:]*=np.nan
-        connection_genes[:,default_num_nodes:]*=np.nan
-        #set ALL innovation_numbers to be initially nan valued
-        connection_genes[:,:,2]*=np.nan
-        #print(np.shape(connection_genes))
-        innov_no = 0
-        #for each requested connection_gene, place in the adjacency-like matrix
-        for connection_gene in requested_connection_genes:
-            #find each directed edge that is requested
-            dir_edge = np.array([connection_gene[0],connection_gene[1]],dtype=int)
-            #locate the corresponding entry in the adjacency matrix and assign the requested vector
-            connection_genes[dir_edge[0],dir_edge[1],:-1] = connection_gene[2:]
-            #assign the innovation_number
-            connection_genes[dir_edge[0],dir_edge[1],-1]=innov_no
-            #increment the innovation number
-            innov_no+=1
-
-        #finally, we can create the genome
-        output_genome = genome(node_genes,connection_genes)
-        return output_genome
