@@ -4,6 +4,8 @@ import numpy as np
 from mutation_functions import mutation_functions
 #import genome builder to convert the hard coded edges into the adjacency matrices
 from genome_builder import genome_builder
+#import the rough visualisation code
+from visualise_genome import visualise_genome
 
 class test_mutation_example:
     def __init__(self):
