@@ -16,15 +16,13 @@ added mutations. If another mutation happens in the same generation, then assign
 as the first. What if the same mutation happens in a DIFFERENT generation? 
 Looks like it is just assigned a different innovation number...
 
-To note:
-
-It looks like in NEAT paper they use 1-indexing for innovation numbers where I have assumed 0-indexing everywhere
-My 0-indexing and method of padding with nans has made writing the mating function horrible
-May have to rework the "padding" and not use nans.
-Instead, best way to do this may be to infact keep track of how many enabled nodes simply through THE ENABLE BITS IN NODE GENES
-And instead of 0-indexing, use 1-indexing for the innovation numbers.
-This will mean I don't have to do any jiggery pokery with the mating functions.
-Set all unused node descriptors to be ZERO and we can tell which nodes are enabled through the node enable bits.
+Now let's try to write the XOR evolution!
+TRY KEEP THINGS GENERAL WITH IN MIND TO APPLY TO PENDULUM BALANCING.
+-generate a spread of N networks, and group into species. This will be generation 0
+-feedforward each of the networks as appropriate for the operation
+-evaluate the shared fitness functions amongst the species.
+-perform the mutating, mating operations ect. and find generation i+1
+-repeat.
 
 '''
 
@@ -33,27 +31,36 @@ from test_genome_example import test_genome_example
 from test_feedforward_example import test_feedforward_example
 from test_mutation_example import test_mutation_example
 from test_mating_example import test_mate_example
+from test_compatability_distance import test_compatability_distance_example
 from feedforward import feedforward
 from visualise_genome import visualise_genome
 
 
 '''
-mutation unit testing for a single network
+testing genome functions
 '''
+#test_genome_example().test()
+'''
+testing the feedforward
+'''
+#test_feedforward_example().test()
+#test_feedforward_example().test_recurrent()
 
 '''
-test_genome_example().test()
-test_feedforward_example().test()
-test_feedforward_example().test_recurrent()
-mutated_genome = test_mutation_example().test_single_mutation()
-#test the mutated_genome for a feedforward
-output_vector= feedforward().timestep_propagation(mutated_genome,[0.3,0.5,0.8],10e-6,'linear')
-print(output_vector)
+testing mutations for a single network
 '''
+#mutated_genome = test_mutation_example().test_single_mutation()
+#output_vector= feedforward().timestep_propagation(mutated_genome,[0.3,0.5,0.8],10e-6,'linear')
+#print(output_vector)
 
 '''
 test mating between Parent1 and Parent2 in the NEAT paper
 '''
-child = test_mate_example().test_mate()
-visualise_genome().plot_network(child)
+#parent0,parent1,child = test_mate_example().test_mate()
+
+'''
+testing the compatability_distance
+'''
+
+test_compatability_distance_example().test()
 

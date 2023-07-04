@@ -28,7 +28,7 @@ class test_genome_example:
         self.test_connection_genes = np.array([[0,3,0.3,1],[0,4,0.4,1],[0,5,0.5,1],[3,2,3.2,1],[4,1,4.1,1],[5,1,5.1,1]])
 
     def test(self):
-        k=0
+        k=1
         #create the initially padded test_genome
         test_genome = genome_builder().build_genome(self.test_node_genes,self.test_connection_genes,num_nodes=8)
         #check out some genes indexed by k

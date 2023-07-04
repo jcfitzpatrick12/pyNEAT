@@ -46,13 +46,8 @@ class genome_builder:
         '''
         #first axis denotes the source node, second axis denotes the target node and the 3 entries on the last axis are defined above
         connection_genes = np.zeros((num_nodes,num_nodes,3))
-        #set ALL descriptors of connection_genes outwith default_num_nodes to be initially nan valued
-        connection_genes[default_num_nodes:,:]*=np.nan
-        connection_genes[:,default_num_nodes:]*=np.nan
-        #set ALL innovation_numbers to be initially nan valued
-        connection_genes[:,:,2]*=np.nan
         #print(np.shape(connection_genes))
-        innov_no = 0
+        innov_no = 1
         #for each requested connection_gene, place in the adjacency-like matrix
         for connection_gene in requested_connection_genes:
             #find each directed edge that is requested

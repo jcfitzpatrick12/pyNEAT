@@ -150,7 +150,7 @@ class mutation_functions:
         connection_genes = np.copy(arb_genome.connection_genes)
         #finally, activate this edge, and assign it a new weight and innovation number
         #find the maximum innovation number
-        max_innov = np.nanmax(connection_genes[...,2])
+        max_innov = np.max(connection_genes[...,2])
         #assign it a randomly assigned weight from the weight range
         randomly_assigned_new_weight = uniform(self.sys_vars.weight_range[0],self.sys_vars.weight_range[1],size=None)
         #create a new edge connecting the old source node (of the edge split) to our new node of weight one, enable that bit and increment the innovation number by one
@@ -196,7 +196,7 @@ class mutation_functions:
         connection_genes = np.copy(arb_genome.connection_genes)
         #finally, activate this edge, and assign it a new weight and innovation number
         #find the maximum innovation number
-        max_innov = np.nanmax(connection_genes[...,2])
+        max_innov = np.max(connection_genes[...,2])
         #assign it a randomly assigned weight from the weight range
         randomly_assigned_new_weight = uniform(self.sys_vars.weight_range[0],self.sys_vars.weight_range[1],size=None)
         #create a new edge connecting the old source node (of the edge split) to our new node of weight one, enable that bit and increment the innovation number by one
@@ -323,7 +323,7 @@ class mutation_functions:
         connection_genes[edge_tosplit[0],edge_tosplit[1],1]=0
         #now add the two new connections: (old_source,new_node) with unit weight and incremented innovation number
         #find the maximum innovation number
-        max_innov = np.nanmax(connection_genes[...,2])
+        max_innov = np.max(connection_genes[...,2])
         #create a new edge connecting the old source node (of the edge split) to our new node of weight one, enable that bit and increment the innovation number by one
         connection_genes[edge_tosplit[0],num_nodes_enabled,:]=[1,1,max_innov+1]
         #find the value of the old weight

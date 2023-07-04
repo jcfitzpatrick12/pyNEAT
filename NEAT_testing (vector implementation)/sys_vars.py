@@ -26,3 +26,15 @@ class sys_vars:
         self.probability_add_link_small_network = 0.05
         #probability a new link will be added to a large network (if network is not small => network is large)
         self.probability_add_link_large_network = 0.3
+
+        '''
+        mating variables
+        '''
+        #probability that we enable a gene if it was disabled in either parent
+        self.probability_enable_gene = 0.25
+        '''
+        compatability evaluation variables
+        '''
+        self.c1=1.0
+        self.c2 = 1.0
+        self.c3 = 0.4

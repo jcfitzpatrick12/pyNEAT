@@ -160,11 +160,6 @@ class genome:
             '''
             #first axis denotes the source node, second axis denotes the target node and the 3 entries on the last axis are defined above
             padded_connection_genes = np.zeros((connection_tup))
-            #set ALL descriptors of connection_genes outwith default_num_nodes to be initially nan valued
-            padded_connection_genes[num_global_max_nodes:,:]*=np.nan
-            padded_connection_genes[:,num_global_max_nodes:]*=np.nan
-            #set ALL innovation_numbers to be initially nan valued
-            padded_connection_genes[:,:,2]*=np.nan
             #copy over the old genome
             padded_connection_genes[:num_global_max_nodes,:num_global_max_nodes]=self.connection_genes
             '''

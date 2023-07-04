@@ -9,6 +9,11 @@ from visualise_genome import visualise_genome
 #import the mating functions
 from mating import mating
 
+
+'''
+we can test this block of code by hardcoding in the true_if_take_from_parent_i arrays for the example in the paper
+'''
+
 #testing mating().mate()
 class test_mate_example:
     def __init__(self):
@@ -35,13 +40,16 @@ class test_mate_example:
         #creating the parent genomes
         parent0 = genome_builder().build_genome(self.parent0_node_genes,self.parent0_connection_genes)
         parent1 = genome_builder().build_genome(self.parent1_node_genes,self.parent1_connection_genes)
-        #visualise_genome().plot_network(parent1)
-        #visualise_genome().plot_network(parent2)
+        
+        visualise_genome().plot_network(parent0)
+        visualise_genome().plot_network(parent1)
 
         #artificially changing the connection_gene innovation numbers to match the paper
-        parent0.connection_innov_numbers[1,5]=7
-        parent1.connection_innov_numbers[3,5]=8
-        parent1.connection_innov_numbers[1,6]=9
+        parent0.connection_innov_numbers[1,5]=8
+        parent1.connection_innov_numbers[3,5]=9
+        parent1.connection_innov_numbers[1,6]=10
         #output the child
         child = mating().mate(parent0,parent1,1,2)
-        return child
+        visualise_genome().plot_network(child)
+        return parent0,parent1,child
+        
