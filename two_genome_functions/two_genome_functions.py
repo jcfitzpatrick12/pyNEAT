@@ -50,19 +50,31 @@ class TwoGenomeFunctions:
         #print(np.shape(disjoint_or_excess_in_either_genome))
         disjoint_or_excess_in_either_genome_vect = np.repeat(disjoint_or_excess_in_either_genome[...,np.newaxis],2,axis=-1)
         #find the proposed excess and disjoint genes in both genomes (true if it exists at the edge element)
+        #this splits them back into the respective genomes!
         disjoint_or_excess_genes = np.multiply(combined_connection_genes[...,2,:],disjoint_or_excess_in_either_genome_vect)>0
         #different genomes are indexed over the last axis. Now the only non-zero_innovation numbers are those which are disjoint
         return disjoint_or_excess_genes
+    
+    def find_matching_genes(self,combined_connection_genes):
+        #take the pairwise difference in innovation numbers between both genomes
+        innov_difference_between_genomes = np.diff(combined_connection_genes[...,2,:],axis=-1)[...,0]
+        #if this is non-zero we have a disjoint or excess gene in at least one of the genomes (yet to be determined which one)
+        matching_genes = innov_difference_between_genomes == 0 
+        return matching_genes
+
 
     #takes in the genomes index, where the disjoint or excess genes are for that genome, and the combined connection_genes
     def num_disjoint_and_excess(self,requested_genome_index,disjoint_or_excess_genes,combined_connection_genes):
         #find the other genomes index
         other_genome_index = 1-requested_genome_index
         max_innov_other_genome= np.nanmax(combined_connection_genes[...,2,other_genome_index])
+        #print(max_innov_other_genome)
         #extract the connection genes of the requested genomes index
         requested_genome_connection_genes = combined_connection_genes[...,requested_genome_index]
         #extract specifically disjoint or excess genes (only the innovation numbers)
-        disjoint_or_excess_gene_innovation_numbers = requested_genome_connection_genes[disjoint_or_excess_genes,2]
+        #print(np.shape(disjoint_or_excess_genes))
+        #print(np.shape(requested_genome_connection_genes))
+        disjoint_or_excess_gene_innovation_numbers = requested_genome_connection_genes[disjoint_or_excess_genes[:,:,requested_genome_index],2]
         #an array which holds ones for only disjoint genes
         disjoint_genes = disjoint_or_excess_gene_innovation_numbers<=max_innov_other_genome
         excess_genes = disjoint_or_excess_gene_innovation_numbers>max_innov_other_genome

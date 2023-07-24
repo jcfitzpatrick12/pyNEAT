@@ -59,8 +59,11 @@ class test_feedforward_example:
         pass
     
     def test_recurrent(self):
+        
         #creating a test genome 
         test_genome = genome_builder().build_genome(self.test_node_labels_2,self.test_connection_genes_2,num_nodes = 8)
+        contains_cycle =mutation_functions().contains_cycle
+        print(f'True if genome contains a cycle: {contains_cycle(test_genome.connection_enable_bits)}')
         visualise_genome().plot_network(test_genome)
         #create the class which handles functions on this genome
         output_vector = feedforward().timestep_propagation(test_genome,self.test_input_vector,10e-6,'linear')

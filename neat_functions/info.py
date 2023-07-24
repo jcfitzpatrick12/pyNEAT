@@ -12,15 +12,17 @@ for now just consider a pythonic array of class objects! Slow, but I can work ou
 
 DONE
 -initialise N networks of identical topologies with random weights
-
-NOT YET DONE
 -run feedforward given an (elsewhere defined) function that takes in inputs and performs timestep propagation on each of the networks (output is the network output for each input)
 -Evaluate the fitness of each network.
 -Function which takes in N genomes in n species, and places them into m new species (based on the paper).
 -Evaluate the adjusted fitness of each network
--Function which takes in N genomes placed into m species, and their respective adjusted fitness and generate the offspring 
+-a function that takes in a genome collection, and their respective adjusted fitness and generate the offspring 
 (offspring are by default in the species they are derived from)
--Function which takes in N genomes placed in the m species, and mutates each in turn. 
+
+NOT YET DONE
+-Function which takes in N genomes placed in the m species, and mutates each in turn (KEEP TRACK OF INNOVATION NUMBERS!
+need to modify the mutation functions. Pass in to mutation an array of "mutation genes added this generation" and when a new mutation is added
+if it is already in the array, assign it the same innovation number!)
 '''
 
 

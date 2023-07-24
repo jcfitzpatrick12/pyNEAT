@@ -26,9 +26,21 @@ class test_mutation_example:
         #creating a test genome 
         #test_genome = genome_builder().build_genome(self.test_node_labels,self.test_connection_genes,num_nodes=7)
         test_genome = genome_builder().build_genome(self.test_node_labels,self.test_connection_genes)
+        visualise_genome().plot_network(test_genome)
+        for i in range(3):
+            print(test_genome.connection_genes[:,:,i])
         '''
         now mutate the genome for one iteration
         '''
+        #initialise a dictionary to keep track of mutatated genes this generation!
+        mutated_genes_dict = {}
+        #each element of the dict is [source,target,innovation_number]
+        #initialise the first mutated gene key (this is a dummy key to save checks later on that a mutation has been added!)
+        mutated_genes_dict[0]={'edge_pair':None,'innovation_number':None}
+        global_max_innov_number = np.max(test_genome.connection_innov_numbers)
         #test the mutation function
-        mutated_genome = mutation_functions().mutate(test_genome)
+        mutated_genome,mutated_genes_dict,global_max_innov_number = mutation_functions().mutate(test_genome,mutated_genes_dict,global_max_innov_number)
+        visualise_genome().plot_network(mutated_genome)
+        for i in range(3):
+            print(mutated_genome.connection_genes[:,:,i])
         return mutated_genome

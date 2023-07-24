@@ -7,7 +7,7 @@ which includes an extra dimension to index the genome.
 
 from sys_vars import sys_vars
 from one_genome_functions.genome_builder import genome_builder
-from multi_network_functions.genome_collection import GenomeCollection
+from neat_functions.genome_collection import GenomeCollection
 from numpy.random import randint,uniform
 import numpy as np
 

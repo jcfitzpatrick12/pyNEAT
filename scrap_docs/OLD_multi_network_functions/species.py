@@ -7,7 +7,7 @@ Will this code cause an issue if there is a species that dies out?**********
 from sys_vars import sys_vars
 import numpy as np
 from numpy.random import randint,uniform
-from multi_network_functions.genome_collection import GenomeCollection
+from neat_functions.genome_collection import GenomeCollection
 from two_genome_functions.compatability_distance import compatability_distance
 
 #perhaps takes in genome_collection as a parent class?

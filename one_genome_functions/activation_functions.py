@@ -12,7 +12,10 @@ class activation_functions:
         return a
     #expononitial activation function
     def exponential_activation_function(self,a):
-        return 1/(1+np.exp(-4.9*a))
+        try:
+            return (1.0 / (1.0 + np.exp(-7.0*a)))
+        except OverflowError:
+            return 0 if a < 0 else 1
     
     #takes an input, and the requested activation function and returns the output of that neuron
     def return_requested_activation_function(self,requested_activation_function):

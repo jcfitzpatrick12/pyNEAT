@@ -4,7 +4,8 @@ from sys_vars import sys_vars
 #import the genome class
 from one_genome_functions.genome import genome
 #directly draw out the uniform distribution sampling
-from numpy.random import uniform,randint
+from one_genome_functions.weight_distributions import WeightDistributions
+from numpy.random import randint,uniform
 #import the rough visualisation code
 from one_genome_functions.visualise_genome import visualise_genome
 #set the random seed
@@ -15,27 +16,61 @@ class mutation_functions:
     def __init__(self):
         self.sys_vars = sys_vars()
 
-    def mutate(self,input_genome):
+
+    #mutations keep track of the
+    #historical dictionary of mutations that have occured this generation
+    #and a global innovation number over all genomes!
+    def mutate(self,input_genome,mutated_genes_dict,global_max_innov_number):
         #visualise the genome before mutation
-        visualise_genome().plot_network(input_genome)
         #mutate the weights of the input genome
         mutated_genome = self.mutate_weights(input_genome)
-        #visualise the genome after mutation
-        visualise_genome().plot_network(mutated_genome)
         #mutate via node addition 
-        mutated_genome = self.mutate_add_node(input_genome)
-        #mutated_genome = self.mutate_add_node(mutated_genome)
+        mutated_genome,mutated_genes_dict,global_max_innov_number = self.mutate_add_node(input_genome,mutated_genes_dict,global_max_innov_number)
+        #mutate by adding links
+        mutated_genome,mutated_genes_dict,global_max_innov_number = self.mutate_add_link(mutated_genome,mutated_genes_dict,global_max_innov_number,allow_cycles=self.sys_vars.allow_cycles)
         #visualise the genome after mutation
-        visualise_genome().plot_network(mutated_genome)
+        #print(mutated_genome.connection_innov_numbers)
         #mutate via link addition (no cycles allowed!)
-        mutated_genome = self.mutate_add_link(mutated_genome,allow_cycles=False)
-        #visualise the genome after mutation
-        visualise_genome().plot_network(mutated_genome)
+        #visualise_genome().plot_network(mutated_genome)
         #mutate via link addition (now cycles allowed!)
-        mutated_genome = self.mutate_add_link(mutated_genome,allow_cycles=True)
-        #visualise the genome after mutation
-        visualise_genome().plot_network(mutated_genome)    
-        return mutated_genome
+        #mutated_genome = self.mutate_add_link(mutated_genome,mutated_genes_dict,allow_cycles=True)    
+        return mutated_genome,mutated_genes_dict,global_max_innov_number
+    
+    #function which takes in mutated_genes_dict, the proposed edge, connection genes, and the proposed innovation
+    #we will set the gene if it is not already in the mutation dictionary!
+    def update_innovation_number(self,mutated_genes_dict,connection_genes,proposed_edge,global_max_innov_number):
+        #by default, presume this is a novel mutation,
+        #and we will add it to the dictionary
+        add_proposed_edge=True
+        #go through each mutated gene that exists in the dictionary
+        for mutated_gene in mutated_genes_dict.values():
+            #if that edge exists in mutated genes, set the innovation number to that value!
+            #edges = [value[1] ]
+            if proposed_edge in [value for value in mutated_gene.values() if isinstance(value, list)]:
+                connection_genes[proposed_edge[0],proposed_edge[1],2] = mutated_gene['innovation number']
+                #since it already exists, we will not add this mutation to the mutation dictionary
+                add_proposed_edge = False
+                #thus return everything without incrementing the global innovation number
+                return connection_genes,mutated_genes_dict,global_max_innov_number
+        #if this mutation does not already exist, add it to the mutation dictionary, increment the global innovation number
+        #and assign the incremented global max innovation number to that connection gene
+        if add_proposed_edge:
+            #increment the global maximum innovation number
+            global_max_innov_number+=1
+            #add that mutation to the mutation dictionary
+            mutated_gene = {'edge_pair': proposed_edge,'innovation number': global_max_innov_number}
+            #find the max key of the dictionary, so to create a new dictionary element
+            max_key = max(mutated_genes_dict)
+            #create that new dictionary element
+            mutated_genes_dict[max_key+1]=mutated_gene
+            #update the new innovation number
+            connection_genes[proposed_edge[0],proposed_edge[1],2] = global_max_innov_number
+
+        #return either the original or modified connection gene depending on whether
+        #or not that mutation was in mutation dict or not
+        #also return the mutated_genes_dict which is also either modified or not according to 
+        #the same criteria
+        return connection_genes,mutated_genes_dict,global_max_innov_number
     
     '''
     Depth first search for an arbitrary graph
@@ -82,18 +117,29 @@ class mutation_functions:
     using a Randomized Depth-First Search (DFS). If it creates a cycle, then we select a new edge.
     For simplicity currently, we do "keep track" of which edges have been proposed.
     '''
-    def add_link_no_cycles(self,arb_genome):
+    def add_link_no_cycles(self,arb_genome,mutated_genes_dict,global_max_innov_number):
+        #make a copy of the original mutated_genes_dict
+        #this is since python dictionaries are mutable, we are going to keep trying to add links
+        #until we find one with no cycle, so we can't keep updating the actual mutated dictionary
+        #or this will be causing issues later on!
+        input_mutated_genes_dict = mutated_genes_dict.copy()
+        #be careful with keeping track of the global max innovatio  number!
+        #since our method of adding a new edge involves arbitarily adding an edge, checking if there is a cycle, and repeating
+        #until a suitable edge is found
+        #thus take a copy of the input global max innovation number
+        input_global_max_innov_number = global_max_innov_number
         #first simply proceed as in the case we we allow cycles
         #add a random edge (which may indeed create a cycle, we don't know yet), the edge we activated, and the total set of permissible edges to activate
-        mutated_genome,edge_to_activate,permissible_edges_to_activate = self.add_link_allow_cycles(arb_genome)
+        mutated_genome,mutated_genes_dict,proposed_global_max_innov_number,edge_to_activate,permissible_edges_to_activate = self.add_link_allow_cycles(arb_genome,mutated_genes_dict,input_global_max_innov_number)
         #slice our mutated_genome to make sure we don't have extra nodes
         sliced_genome = mutated_genome.return_enabled_genome()
+        #extract the enable bits as this is what we use to check cycles (disabled edges naturally should not be included)
         proposed_enable_bits = np.copy(sliced_genome.connection_enable_bits)
         #check if we have created a cycle
         cycle_exists = self.contains_cycle(proposed_enable_bits)
         #if we have not created a cycle, we got lucky! return the mutated genome with the added link
         if cycle_exists==False:
-            return mutated_genome
+            return mutated_genome,mutated_genes_dict,proposed_global_max_innov_number
         #otherwise our proposed edge creates a cycle... so try again! For efficiency, keep track of our proposed edges
         else:
             #keep track of how many times we have tried to add an edge
@@ -102,6 +148,8 @@ class mutation_functions:
             N=len(permissible_edges_to_activate[0,:])
             #otherwise, keep adding edges from permissible edges to activate, until we find one which does not introduce a cycle!
             while cycle_exists == True and n<N:
+                    #make a new copy of the input mutated_genes_dict
+                    new_mutated_genes_dict = input_mutated_genes_dict.copy()
                     #create an array if the source nodes the permissible edges match with the edge activated
                     sources_match = permissible_edges_to_activate[0,:]==edge_to_activate[0]
                     #create an array if the target nodes the permissible edges match with the edge activated
@@ -110,10 +158,10 @@ class mutation_functions:
                     true_if_edge_matches = np.multiply(sources_match,targets_match)
                     #find the index at which this happens
                     edge_ind = np.where(true_if_edge_matches==True)[0]
-                    #delete from the list of permissible edges to add
+                    #delete from the list of permissible edges to add (since we just tried it)
                     permissible_edges_to_activate=np.delete(permissible_edges_to_activate,edge_ind,axis=1)
                     #now add an edge from the remaining set of permissible edges to activate
-                    mutated_genome,edge_to_activate = self.add_link_allow_cycles_shortened(arb_genome,permissible_edges_to_activate)
+                    mutated_genome,mutated_genes_dict,proposed_global_max_innov_number,edge_to_activate = self.add_link_allow_cycles_shortened(arb_genome,permissible_edges_to_activate,new_mutated_genes_dict,input_mutated_genes_dict,input_global_max_innov_number)
                     #extract the enable_bits matrix of the mutated genome
                     #slice our mutated_genome to make sure we don't have extra nodes
                     sliced_genome = mutated_genome.return_enabled_genome()
@@ -124,47 +172,57 @@ class mutation_functions:
                     n+=1
             #if we reached our upper bound
             if n>=N:
-                print("We have tried all available edges! Returning the original genome.")
-                return arb_genome
-        return mutated_genome
+                #print("We have tried all available edges! Returning the original genome.")
+                return arb_genome,input_mutated_genes_dict,proposed_global_max_innov_number
+        return mutated_genome,mutated_genes_dict,proposed_global_max_innov_number
     
     '''
     a function identical to add_link_allow_cycles, except that we already have our list of permissible edges to activate!
     This way, we can also keep track of which edges we have tried to add from the set of all permissible edges.
     Also, we now don't need to return the permissible edges to activate as this is handled in add_link_no_cycles
+    In the future make this redundant as it is a nightmare for debugging.
     '''
 
-    def add_link_allow_cycles_shortened(self,arb_genome,permissible_edges_to_activate):
+    def add_link_allow_cycles_shortened(self,arb_genome,permissible_edges_to_activate,mutated_genes_dict,input_mutated_genes_dict,global_max_innov_number):
         #find the number of permissible edges to activate
         num_permissible_edges_to_activate = len(permissible_edges_to_activate[0,:])
         #if we have no permissible edges to activate!
         if num_permissible_edges_to_activate==0:
-            print('No edges can be added! Returning genome unchanged.')
-            return arb_genome,None
+            #print('No edges can be added! Returning genome unchanged.')
+            return arb_genome,input_mutated_genes_dict,global_max_innov_number,global_max_innov_number
         #select one to activate at random
         rand_int = randint(0,num_permissible_edges_to_activate)
         #edge_to_activate
-        edge_to_activate = permissible_edges_to_activate[:,rand_int]
+        edge_to_activate = [permissible_edges_to_activate[0,rand_int],permissible_edges_to_activate[1,rand_int]]
         #finally activate the edge
         #create a copy of arb_genomes connection genes! 
         connection_genes = np.copy(arb_genome.connection_genes)
-        #finally, activate this edge, and assign it a new weight and innovation number
-        #find the maximum innovation number
-        max_innov = np.max(connection_genes[...,2])
+        #finally, activate this edge, and assign it a new weight
         #assign it a randomly assigned weight from the weight range
-        randomly_assigned_new_weight = uniform(self.sys_vars.weight_range[0],self.sys_vars.weight_range[1],size=None)
+        randomly_assigned_new_weight = WeightDistributions().return_weights(None)
         #create a new edge connecting the old source node (of the edge split) to our new node of weight one, enable that bit and increment the innovation number by one
-        connection_genes[edge_to_activate[0],edge_to_activate[1],:]=[randomly_assigned_new_weight,1,max_innov+1]
+        connection_genes[edge_to_activate[0],edge_to_activate[1],:2]=[randomly_assigned_new_weight,1]
+
+        '''
+        Handle if the mutation has occured before, and update the global innovation number if necessary
+        '''
+        connection_genes,mutated_genes_dict,global_max_innov_number = self.update_innovation_number(mutated_genes_dict,connection_genes,edge_to_activate,global_max_innov_number)
+        '''
+        NOTE: if indeed, by chance we select an edge which has been previously disabled,
+        then we assign it both a new weight and new innovation number.
+        '''
+        #print(connection_genes[:,:,2])
         #create the mutated genome and return it
         mutated_genome = genome(arb_genome.node_genes,connection_genes)
-        #return the mutated_genome and the edge we activated
-        return mutated_genome, edge_to_activate
+
+        #return the mutated_genome, the edge we activated and the permissible edges to activate
+        return mutated_genome,mutated_genes_dict,global_max_innov_number,edge_to_activate
     
     '''
     In add_link_allow_cycles we have to impose restrictions on what edges are allowed:
     -The target neuron may not be an input.
     '''
-    def add_link_allow_cycles(self,arb_genome):
+    def add_link_allow_cycles(self,arb_genome,mutated_genes_dict,global_max_innov_number):
         #add a new conneciton between two previously unconnected enabled nodes (subject to above constraints)
         #so need to find nodes which 1) have no edge connecting them 2) both nodes are enabled.
         #first extract the sliced "enabled" genome (i.e. the non-padded genome which contains only enabled nodes)
@@ -185,26 +243,36 @@ class mutation_functions:
         num_permissible_edges_to_activate = len(permissible_edges_to_activate[0,:])
         #if we have no permissible edges to activate!
         if num_permissible_edges_to_activate==0:
-            print('No edges can be added! Returning genome unchanged.')
-            return arb_genome
+            #print('No edges can be added! Returning genome unchanged.')
+            return arb_genome,mutated_genes_dict,global_max_innov_number
         #select one to activate at random
         rand_int = randint(0,num_permissible_edges_to_activate)
         #edge_to_activate
-        edge_to_activate = permissible_edges_to_activate[:,rand_int]
+        edge_to_activate = [permissible_edges_to_activate[0,rand_int],permissible_edges_to_activate[1,rand_int]]
         #finally activate the edge
         #create a copy of arb_genomes connection genes! 
         connection_genes = np.copy(arb_genome.connection_genes)
-        #finally, activate this edge, and assign it a new weight and innovation number
-        #find the maximum innovation number
-        max_innov = np.max(connection_genes[...,2])
+        #finally, activate this edge, and assign it a new weight
         #assign it a randomly assigned weight from the weight range
-        randomly_assigned_new_weight = uniform(self.sys_vars.weight_range[0],self.sys_vars.weight_range[1],size=None)
+        randomly_assigned_new_weight = WeightDistributions().return_weights(None)
         #create a new edge connecting the old source node (of the edge split) to our new node of weight one, enable that bit and increment the innovation number by one
-        connection_genes[edge_to_activate[0],edge_to_activate[1],:]=[randomly_assigned_new_weight,1,max_innov+1]
+        #note, the innovation number may be updated, depending on whether or not the mutation has occured before
+        connection_genes[edge_to_activate[0],edge_to_activate[1],:2]=[randomly_assigned_new_weight,1]
+
+        '''
+        Handle if the mutation has occured before, and update the global innovation number if necessary
+        '''
+        connection_genes,mutated_genes_dict,global_max_innov_number = self.update_innovation_number(mutated_genes_dict,connection_genes,edge_to_activate,global_max_innov_number)
+        '''
+        NOTE: if indeed, by chance we select an edge which has been previously disabled,
+        then we assign it both a new weight and new innovation number.
+        '''
+        #print(connection_genes[:,:,2])
         #create the mutated genome and return it
         mutated_genome = genome(arb_genome.node_genes,connection_genes)
+
         #return the mutated_genome, the edge we activated and the permissible edges to activate
-        return mutated_genome,edge_to_activate,permissible_edges_to_activate
+        return mutated_genome,mutated_genes_dict,global_max_innov_number,edge_to_activate,permissible_edges_to_activate
     
 
     '''
@@ -216,7 +284,7 @@ class mutation_functions:
     #one of the "options" allows disabling of recursive links!
     #NOTE the default allows recursive links!
     '''
-    def mutate_add_link(self,arb_genome,**kwargs):
+    def mutate_add_link(self,arb_genome,mutated_genes_dict,global_max_innov_number,**kwargs):
         #extracting the correct probability for the respective network size
         network_size = arb_genome.network_size()
         if network_size == 'small_network':
@@ -229,19 +297,19 @@ class mutation_functions:
         allow_cycles = kwargs.get('allow_cycles',default_boole)
         #now draw a random variable
         rv = uniform(0,1,size=None)
-        rv =0.04
+        #rv =0.04
         #if we decide to add a link
         if rv<=probability_add_link:
             #if we are going to allow recursive neural networks
             if allow_cycles==True:
                 #find the mutated genome
-                mutated_genome = self.add_link_allow_cycles(arb_genome)[0]
-                return mutated_genome
+                mutated_genome,mutated_genes_dict,global_max_innov_number = self.add_link_allow_cycles(arb_genome,mutated_genes_dict,global_max_innov_number)[0:3]
+                return mutated_genome,mutated_genes_dict,global_max_innov_number
             #if we are not going to allow recursive neural networks
             elif allow_cycles==False:
-                mutated_genome=self.add_link_no_cycles(arb_genome)
-                return mutated_genome
-        return arb_genome
+                mutated_genome,mutated_genes_dict,global_max_innov_number=self.add_link_no_cycles(arb_genome,mutated_genes_dict,global_max_innov_number)
+                return mutated_genome,mutated_genes_dict,global_max_innov_number
+        return arb_genome,mutated_genes_dict,global_max_innov_number
     '''
     ""In the add connection
     mutation, a single new connection gene with a random weight is added connecting
@@ -265,7 +333,7 @@ class mutation_functions:
     if we do not have spare nodes INCREASE THE DIMENSION of our adjacency matrices
     we use this method to minimise the size of our arrays (with in mind when we are implementing the full NEAT algorithm)
     '''
-    def mutate_add_node(self,arb_genome):
+    def mutate_add_node(self,arb_genome,mutated_genes_dict,global_max_innov_number):
         #np.random.seed(2)
         #important variable: whether there are any spare nodes. spare_nodes is 0 if there are spare nodes
         zero_if_spare_nodes = np.prod(arb_genome.node_enable_bits)
@@ -279,9 +347,9 @@ class mutation_functions:
             #so enable one of the unenabled nodes
             if zero_if_spare_nodes==0:
                 #if we have some spare nodes, choose a uniformly selected edge amongst those enabled and split it as described in NEAT paper
-                mutated_genome = self.add_new_node(arb_genome)
+                mutated_genome,mutated_genes_dict,global_max_innov_number = self.add_new_node(arb_genome,mutated_genes_dict,global_max_innov_number)
                 #return the mutated genome
-                return mutated_genome
+                return mutated_genome,mutated_genes_dict,global_max_innov_number
             #if indeed we have no spare nodes, we need to increase the dimension of connection_genes and node_genes
             #to accomadate the new node
             else:
@@ -290,13 +358,13 @@ class mutation_functions:
                 num_global_max_nodes=arb_genome.num_nodes()
                 #pad out the genome with an extra node
                 arb_genome = arb_genome.return_padded_genome(num_global_max_nodes+1)
-                mutated_genome = self.add_new_node(arb_genome)
+                mutated_genome,mutated_genes_dict,global_max_innov_number = self.add_new_node(arb_genome,mutated_genes_dict,global_max_innov_number)
                 #return the mutated genome
-                return mutated_genome
-        return arb_genome
+                return mutated_genome,mutated_genes_dict,global_max_innov_number
+        return arb_genome,mutated_genes_dict,global_max_innov_number
       
     #add_new_node takes in any arbitrary genome (with at least one available padded column) and adds a new node as per the NEAT paper
-    def add_new_node(self,arb_genome):
+    def add_new_node(self,arb_genome,mutated_genes_dict,global_max_innov_number):
         #important variable: how many nodes are currently enabled in arb_genome
         num_nodes_enabled = arb_genome.num_nodes(type='enabled')
         #extract the node genes from arb_genome
@@ -322,18 +390,28 @@ class mutation_functions:
         #we now need to disable the old edge (convert that enable bit to zero)
         connection_genes[edge_tosplit[0],edge_tosplit[1],1]=0
         #now add the two new connections: (old_source,new_node) with unit weight and incremented innovation number
-        #find the maximum innovation number
-        max_innov = np.max(connection_genes[...,2])
-        #create a new edge connecting the old source node (of the edge split) to our new node of weight one, enable that bit and increment the innovation number by one
-        connection_genes[edge_tosplit[0],num_nodes_enabled,:]=[1,1,max_innov+1]
+        incoming_edge_to_add = [edge_tosplit[0],num_nodes_enabled]
+        outgoing_edge_to_add = [num_nodes_enabled,edge_tosplit[1]]
+
+
+        #create a new edge connecting the old source node (of the edge split) to our new node of weight one, enable that bit
+        connection_genes[incoming_edge_to_add[0],incoming_edge_to_add[1],:2]=[1,1]
         #find the value of the old weight
         old_weight=connection_genes[edge_tosplit[0],edge_tosplit[1],0]
         #create a new edge whose source is our new node, and whose target is the old node
         #we set it's weight to be the weight of the old edge, enable it and increment the innovation number by 2
-        connection_genes[num_nodes_enabled,edge_tosplit[1],:]=[old_weight,1,max_innov+2]
+        connection_genes[outgoing_edge_to_add[0],outgoing_edge_to_add[1],:2]=[old_weight,1]
+
+
+        '''
+        Handle if the mutation has occured before, and handle the global_max_innovation_number
+        '''
+        connection_genes,mutated_genes_dict,global_max_innov_number = self.update_innovation_number(mutated_genes_dict,connection_genes,incoming_edge_to_add,global_max_innov_number)
+        connection_genes,mutated_genes_dict,global_max_innov_number = self.update_innovation_number(mutated_genes_dict,connection_genes,outgoing_edge_to_add,global_max_innov_number)
         #build the mutated genome and return
         mutated_genome = genome(node_genes,connection_genes)
-        return mutated_genome
+
+        return mutated_genome,mutated_genes_dict,global_max_innov_number
 
     #function that takes an arbitrary genome, and returns a genome with mutated weights
     def mutate_weights(self,arb_genome):
@@ -342,7 +420,7 @@ class mutation_functions:
         '''
         #manually set rv right now to make sure we adjust the weights
         rv = uniform(0.0, 1.0, size=None)
-        rv=0.4
+        #rv=0.4
         #decide whether we will perturb the weights for this network
         if rv>self.sys_vars.probability_weight_perturbed:
             #if we the weights are not perturbed simply pass
@@ -359,6 +437,8 @@ class mutation_functions:
             connection_enable_bits = connection_genes[...,1]
             #draw a random variable FOR EACH WEIGHT! Even, those of value zero!
             rvs = uniform(0,1,size=np.shape(connection_enable_bits))
+            #rvs = normal(self.sys_vars.normal_weight_params[0],self.sys_vars.normal_weight_params[1],np.shape(connection_enable_bits))
+            #print(rvs)
             #NOTE: Let us only modifify the weights of enabled edges
             rvs = np.multiply(rvs,connection_enable_bits)
             #print(rvs)
@@ -370,7 +450,7 @@ class mutation_functions:
             #create uniform perturbations of ALL WEIGHTS
             uniformly_perturbed_weights = connection_weights + uniform(-self.sys_vars.uniform_perturbation_radius,self.sys_vars.uniform_perturbation_radius,size=np.shape(connection_weights))
             #create assigned new values of ALL WEIGHTS
-            randomly_assigned_new_weights = uniform(self.sys_vars.weight_range[0],self.sys_vars.weight_range[1],size=np.shape(connection_weights))
+            randomly_assigned_new_weights = WeightDistributions().return_weights(np.shape(connection_weights))
             #then simply np.multiply them with their respective boolean arrays and element-wise sum to obtain the result
             #the result being that each weight is now either uniformly perturbed or assigned a new value based on its 
             #drawn random variable
@@ -380,6 +460,7 @@ class mutation_functions:
             '''
             #extract the old connection_genes
             connection_genes[...,0]=connection_weights
+            #print(connection_weights)
             #returning a new genome
             return genome(arb_genome.node_genes,connection_genes)
 
