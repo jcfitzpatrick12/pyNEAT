@@ -83,16 +83,16 @@ class sys_vars:
         #the tolerance angle which we define the pendulum to be balanced for! around 15 deg in radians
         self.balanced_tolerance = 0.5
         #length of time the network controls the base for (seconds) before evaluating a new acceleration for the base
-        self.response_time_interval = 0.3
+        self.response_time_interval = 0.1
         #number of timesteps we need a solution at (evenly spaced)
         self.num_timesteps_for_sol = 20
 
         #gaussian widths of the distributions we sample the initial conditions from
-        self.initial_theta_normal_width = 0.05
-        self.initial_theta_dot_normal_width = 0.05
+        self.initial_theta_normal_width = 0.025
+        self.initial_theta_dot_normal_width = 0.0
 
         #multiple of the network output to get the actual force constant
-        self.force_multiple = 1.0
+        self.force_multiple = 0.75
 
 
         '''
