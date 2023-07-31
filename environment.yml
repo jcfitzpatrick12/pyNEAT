@@ -1,0 +1,9 @@
+name: pyNEAT-env
+channels:
+  - defaults
+dependencies:
+  - python>=3.8 
+  - numpy
+  - scipy
+  - networkx
+  - matplotlib
