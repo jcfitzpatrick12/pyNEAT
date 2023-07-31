@@ -53,18 +53,23 @@ class MultiNetworkMutationsFuncs:
                 if len(genome_descriptors)!=0:
                     #extract the genome
                     g = genome_descriptor['genome']
-                    #print(g.connection_innov_numbers)
-                    #raise SystemExit
-                    #mutate the genome. Take in the list of mutated genes, and the global max innovation number over all genomes
-                    mutated_g,mutated_genes_dict,global_max_innov_number = mutation_functions().mutate(g,mutated_genes_dict,global_max_innov_number)
-                    #raise SystemExit
-                    #update the genome descriptor
-                    genome_descriptor['genome']=mutated_g
-                    
+                    #if the genome is a champion, copy into the next generation
+                    if genome_descriptor['champion']:
+                        genome_descriptor['genome']=g
+                        pass
+                    #otherwise the genome is not a champion, and we mutate it
+                    else:
+                        #print(g.connection_innov_numbers)
+                        #raise SystemExit
+                        #mutate the genome. Take in the list of mutated genes, and the global max innovation number over all genomes
+                        mutated_g,mutated_genes_dict,global_max_innov_number = mutation_functions().mutate(g,mutated_genes_dict,global_max_innov_number)
+                        #raise SystemExit
+                        #update the genome descriptor
+                        genome_descriptor['genome']=mutated_g
+                        
                     #find the maximumum innovation number after the mutation has taken place, and evaluate if it has incremented the global max
                     max_innov_of_g = np.max(mutated_g.connection_innov_numbers)
                     if max_innov_of_g>global_max_innov_number:
                         global_max_innov_number=max_innov_of_g
-
 
         return genome_collection

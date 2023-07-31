@@ -7,7 +7,7 @@ from one_genome_functions.genome import genome
 from one_genome_functions.weight_distributions import WeightDistributions
 from numpy.random import randint,uniform
 #import the rough visualisation code
-from one_genome_functions.visualise_genome import visualise_genome
+from plotting.plot_genome import visualise_genome
 #set the random seed
 #np.random.seed(2)
 

@@ -29,7 +29,7 @@ and then from genome_adjusted_fitness we build the new genomes and we start agai
 from one_genome_functions.genome_builder import genome_builder
 from one_genome_functions.weight_distributions import WeightDistributions
 from neat_functions.genome_collection import GenomeCollection
-from one_genome_functions.visualise_genome import visualise_genome
+from plotting.plot_genome import visualise_genome
 from numpy.random import uniform,normal
 
 from sys_vars import sys_vars
@@ -80,6 +80,8 @@ class InitialiseNetwork:
             #genome_descriptor['network output']=None
             genome_descriptor['fitness']=None
             genome_descriptor['adjusted fitness']=None
+            genome_descriptor['time balanced']=None
+            genome_descriptor['champion']=False
             #append this genome descriptor to genome collection
             genome_descriptors.append(genome_descriptor)
         #print(genome_descriptors)

@@ -1,5 +1,5 @@
 import numpy as np
-from one_genome_functions.visualise_genome import visualise_genome
+from plotting.plot_genome import visualise_genome
 from one_genome_functions.genome_builder import genome_builder
 from two_genome_functions.two_genome_functions import TwoGenomeFunctions
 

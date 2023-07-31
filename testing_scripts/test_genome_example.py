@@ -7,7 +7,7 @@ from one_genome_functions.genome_builder import genome_builder
 #import genome functions which holds the functions which act on a single genome
 #from genome_functions import genome_functions
 #import the rough visualisation code
-from one_genome_functions.visualise_genome import visualise_genome
+from plotting.plot_genome import visualise_genome
 
 
 class test_genome_example:

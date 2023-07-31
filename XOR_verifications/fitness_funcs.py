@@ -12,7 +12,7 @@ class XORFitnessFuncs:
     
     #for simplicity, we adjust the fitness of g, by simply dividing by the number of genomes that reside in the same species of g
     def find_adjusted_fitness(self,genome_collection):
-        sharing_sum = compatability_distance().sharing_sum
+        #sharing_sum = compatability_distance().sharing_sum
         #for each species list of genome_descriptors, loop through each genome_descriptor and update the "network output" key with the output vectors
         for genome_descriptors in genome_collection.genomes_dict.values():
                 #if that species exists
@@ -34,19 +34,13 @@ class XORFitnessFuncs:
         #defining the correct output for each input vector (according to an XOR gate)
         XOR_true_output_vector = np.array([0,1,1,0])
         #find the distance between the network outputs and the "correct" outputs
-        error_distance = np.abs((hypothesised_outputs-XOR_true_output_vector))
-        sum_square_error = np.sqrt(np.sum(np.power(error_distance,2)))
-        network_fitness=4-sum_square_error
-        '''
-        #sum the differences for each network
-        sum_error_diff = np.sum(error_distance)
-        #"... result of this error was subtracted from 4 so that higher fitness would reflect better network structure"
-        four_minus_sum_error_diff = 4-sum_error_diff
-        #square the distance to obtain the network fitnesses
-        network_fitness = np.power(four_minus_sum_error_diff,2)
-        #note, the maximum network fitness is 16! since in the ideal case, error_distance is zero, so sum_error_diff is 0, and we get that the max network fitness is 16.      
-        '''
-        return network_fitness     
+        error_vector = np.abs((hypothesised_outputs-XOR_true_output_vector))
+        #find the sum square error (euclidian size of teh error vector)
+        sum_square_error = np.sqrt(np.sum(np.power(error_vector,2)))
+        #take away from 2 (which is the largest possible error!) so that low error means high fitness
+        network_fitness=2-sum_square_error
+        #print(network_fitness)
+        return network_fitness
 
 
     #fill in the output vectors and compute the network fitnesses.

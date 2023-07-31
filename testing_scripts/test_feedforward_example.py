@@ -8,7 +8,7 @@ from one_genome_functions.genome_builder import genome_builder
 from one_genome_functions.mutation_functions import mutation_functions
 #import the feedforward function
 from one_genome_functions.feedforward import feedforward
-from one_genome_functions.visualise_genome import visualise_genome
+from plotting.plot_genome import visualise_genome
 
 
 class test_feedforward_example:

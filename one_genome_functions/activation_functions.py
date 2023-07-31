@@ -13,12 +13,15 @@ class activation_functions:
     #expononitial activation function
     def exponential_activation_function(self,a):
         try:
-            return (1.0 / (1.0 + np.exp(-7.0*a)))
+            return (1.0 / (1.0 + np.exp(-4.9*a)))
         except OverflowError:
             return 0 if a < 0 else 1
+        
+    def tanh(self,a):
+        return (2/(1+np.exp(-2*a)))-1
     
     #takes an input, and the requested activation function and returns the output of that neuron
     def return_requested_activation_function(self,requested_activation_function):
-        activation_functions_dict = {'linear' : self.linear_activatation_function, 'exponential' : self.exponential_activation_function}
+        activation_functions_dict = {'linear' : self.linear_activatation_function, 'exponential' : self.exponential_activation_function, 'tanh': self.tanh}
         func = activation_functions_dict[requested_activation_function]
         return func

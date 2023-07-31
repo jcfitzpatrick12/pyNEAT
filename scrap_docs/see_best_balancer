@@ -1,0 +1,22 @@
+import numpy as np
+from one_genome_functions.visualise_genome import visualise_genome
+from one_pendulum_model.balance_pendulum import BalancePendulum
+from numpy.random import normal
+from sys_vars import sys_vars
+
+#proposed_best_genome = np.load("C:\\Users\\Jimmy Fitzpatrick\\Desktop\\ML_pendulum\\pyNEAT\\best_genomes\\no_hidden_node_balancer.npy",allow_pickle=True).item()
+#proposed_best_genome = np.load("C:\\Users\\Jimmy Fitzpatrick\\Desktop\\ML_pendulum\\pyNEAT\\best_genomes\\no_cycles.npy",allow_pickle=True).item()
+#proposed_best_genome = np.load("C:\\Users\\Jimmy Fitzpatrick\\Desktop\\ML_pendulum\\pyNEAT\\best_genomes\\another_best_balancer.npy",allow_pickle=True).item()
+proposed_best_genome = np.load("C:\\Users\\Jimmy Fitzpatrick\\Desktop\\ML_pendulum\\pyNEAT\\best_genomes\\best_genome.npy",allow_pickle=True).item()
+
+
+#####-----############################################################################################################
+#Sometimes the algorithm may output a network that it balances for, but not with the new random initial conditions!
+####------############################################################################################################
+visualise_genome().plot_network(proposed_best_genome)
+#start the pendulum at some small angle with some small velocity (radians and radians/s)
+#start the pendulum at some small angle with no velocity
+y0 = [np.pi-normal(0,sys_vars().initial_theta_normal_width),normal(0,sys_vars().initial_theta_dot_normal_width)]
+#y0 = [np.pi-0.05,0]
+#try balance the pendulum with the best proposed genome
+time_fell = BalancePendulum().try_balance(proposed_best_genome,y0,visualise=True) 

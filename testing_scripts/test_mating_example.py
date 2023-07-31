@@ -3,7 +3,7 @@ import numpy as np
 #import genome builder to convert the hard coded edges into the adjacency matrices
 from one_genome_functions.genome_builder import genome_builder
 #import the rough visualisation code
-from one_genome_functions.visualise_genome import visualise_genome
+from plotting.plot_genome import visualise_genome
 #import the mating functions
 from two_genome_functions.mating import mating
 

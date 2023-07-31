@@ -4,7 +4,7 @@ class to keep track of which babies not allowed to reproduce!
 from sys_vars import sys_vars
 import numpy as np
 
-class HMF:
+class HistoricalRecords:
     def __init__(self):
         self.sys_vars=sys_vars()
 
@@ -48,14 +48,14 @@ class HMF:
 
     
     #keeps track of the max fitnesses of each species after each generation
-    def max_fitness_update_dict(self,this_gen_max_fitness_dict,historical_max_fitness_dict,genome_collection):
+    def update_dict(self,this_gen_dict,historical_dict,genome_collection):
         #find the max key value of the historical max fitness dict
         for species_index in genome_collection.genomes_dict.keys():
             #print(this_gen_max_fitness_dict[species_index])
             #print(this_gen_max_fitness_dict[species_index])
             try:
-                historical_max_fitness_dict[species_index].append(this_gen_max_fitness_dict[species_index])
+                historical_dict[species_index].append(this_gen_dict[species_index])
             except:
-                historical_max_fitness_dict[species_index]=[]
-                historical_max_fitness_dict[species_index].append(this_gen_max_fitness_dict[species_index])
-        return historical_max_fitness_dict
+                historical_dict[species_index]=[]
+                historical_dict[species_index].append(this_gen_dict[species_index])
+        return historical_dict

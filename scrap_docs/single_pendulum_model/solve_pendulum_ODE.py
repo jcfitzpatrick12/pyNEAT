@@ -25,6 +25,11 @@ theta,theta_dot ---> NN black box -----> X dot dot
 
 So let's get some detail on whats needed for the NN
 
+FIX THIS CODE
+
+PLACE ALL CONSTANTS INTO sys_vars rather than packing them into the class
+then rejig the code a bit for ease of use.
+
 
 
 
@@ -37,46 +42,25 @@ import packages and classes
 from scipy.integrate import odeint
 import numpy as np
 import matplotlib.pyplot as plt
-from one_pendulum_funcs import one_pendulum_funcs
-from one_pendulum_plot import one_pendulum_plot
+#from one_pendulum_funcs import one_pendulum_funcs
+#from one_pendulum_plot import one_pendulum_plot
+from sys_vars import sys_vars
 
-
-'''
-Defining constants (user inputs)
-'''
-#grav constant [ms^-2]
-g=9.8
-#l is the length of the pendulum [m]
-l=1
-#X_0 is the oscillation amplitude of the base [m]
-X_0 = 0.05
-#big omega is the oscillation frequency of the base [Hz]
-big_omega = 10
-#decay constant
-k=0
-#how long simulation will run [s]
-T = 5
-#take n_t equidistant samples of the solution in time
-n_t = T*20
-#consider an initial position
-y0 = [np.pi/50, 0.0] #this is a list NOT an array
-#which base movement function are we requesting? ['oscil']
-X_t_string = 'oscil_decay'
+raise SystemExit
 
 ##########################################
 ######## END OF USER INPUTS ##############
 ##########################################
 
 #call the solution at 101 evenly spaced intervals for 10 seconds
-t = np.linspace(0, T, n_t)
-#calling the one_pendulum functions which control the systems of equations we need to solve
-pend_funcs = one_pendulum_funcs(g,l,X_0,big_omega,k,X_t_string)
+t = np.linspace(0, sys_vars().T, sys_vars().n_t)
+
 #sol holds the vector y(t) i.e. theta and omega at each t
 #pend_funcs
-sol = odeint(pend_funcs.pend_system, y0, t)
+sol = odeint(one_pendulum_funcs(sys_vars).pend_system, sys_vars().y0, t)
 
 #defining the plot pendulum class
-pend_plots=one_pendulum_plot(pend_funcs,sol,t,y0)
+pend_plots=one_pendulum_plot(one_pendulum_funcs(),sol,t,sys_vars().y0)
 #pend_plots.plot_pendulum_snapshots()
 pend_plots.animate_pendulum()
 
