@@ -24,6 +24,7 @@ class plotNEAT:
         self.fsize_head = 10
         self.fsize_ticks = 10
 
+
     def test_XOR_verification(self):
         #load the historical records and plot
         historical_records_dict=osFuncs().load_data('historical_records_dict',allow_pickle=True)
@@ -34,14 +35,16 @@ class plotNEAT:
         #load the most recent proposed_best_genome
         proposed_best_genome = osFuncs().load_data('proposed_best_genome',allow_pickle=True)
         visualise_genome().plot_network(proposed_best_genome)
-        output_vector = feedforward().timestep_propagation(proposed_best_genome,[1,0,0],10e-6,'exponential')
-        print(output_vector)
-        output_vector = feedforward().timestep_propagation(proposed_best_genome,[1,0,1],10e-6,'exponential')
-        print(output_vector)
-        output_vector = feedforward().timestep_propagation(proposed_best_genome,[1,1,0],10e-6,'exponential')
-        print(output_vector)
-        output_vector = feedforward().timestep_propagation(proposed_best_genome,[1,1,1],10e-6,'exponential')
-        print(output_vector)
+
+        output_vector_00 = feedforward().timestep_propagation(proposed_best_genome,[1,0,0],10e-6,'exponential')
+        output_vector_01 = feedforward().timestep_propagation(proposed_best_genome,[1,0,1],10e-6,'exponential')
+        output_vector_10 = feedforward().timestep_propagation(proposed_best_genome,[1,1,0],10e-6,'exponential')
+        output_vector_11 = feedforward().timestep_propagation(proposed_best_genome,[1,1,1],10e-6,'exponential')
+
+        print(f'Network input: {[1,0,0]}; network output: {output_vector_00}; expected_output: {0}')
+        print(f'Network input: {[1,0,1]}; network output: {output_vector_01}; expected_output: {1}')
+        print(f'Network input: {[1,1,0]}; network output: {output_vector_10}; expected_output: {1}')
+        print(f'Network input: {[1,1,1]}; network output: {output_vector_11}; expected_output: {0}')
         pass
 
     #takes the most recent saved genome and tries to balance a pendulum with it

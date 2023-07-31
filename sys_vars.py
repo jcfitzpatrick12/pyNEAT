@@ -34,7 +34,7 @@ class sys_vars:
         #probability a new link will be added to a large network (if network is not small => network is large)
         self.probability_add_link_large_network = 0.3
         #whether we are going to allow cycles when adding a link
-        self.allow_cycles=True
+        self.allow_cycles=False
 
         '''
         mating variables
@@ -83,7 +83,7 @@ class sys_vars:
         #the tolerance angle which we define the pendulum to be balanced for! around 15 deg in radians
         self.balanced_tolerance = 0.5
         #length of time the network controls the base for (seconds) before evaluating a new acceleration for the base
-        self.response_time_interval = 0.1
+        self.response_time_interval = 0.25
         #number of timesteps we need a solution at (evenly spaced)
         self.num_timesteps_for_sol = 20
 
@@ -91,7 +91,7 @@ class sys_vars:
         self.initial_theta_normal_width = 0.025
         self.initial_theta_dot_normal_width = 0.0
 
-        #multiple of the network output to get the actual force constant
+        #multiple of the network output to get the actual acceleration of the base
         self.force_multiple = 0.75
 
 
