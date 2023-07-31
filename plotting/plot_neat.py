@@ -70,7 +70,7 @@ class plotNEAT:
         base_pos_x = osFuncs().load_data('base_pos_x')
         force_constants = osFuncs().load_data('force_constants')
 
-        pend_plots=one_pendulum_plot(sol,t,base_pos_x,force_constants)
+        pend_plots=one_pendulum_plot(sol,t,base_pos_x,force_constants=force_constants)
         pend_plots.plot_sol()
         pend_plots.animate_pendulum()
         pend_plots.plot_force_constant()

@@ -88,7 +88,7 @@ class sys_vars:
         self.num_timesteps_for_sol = 20
 
         #gaussian widths of the distributions we sample the initial conditions from
-        self.initial_theta_normal_width = 0.025
+        self.initial_theta_normal_width = 0.01
         self.initial_theta_dot_normal_width = 0.0
 
         #multiple of the network output to get the actual acceleration of the base

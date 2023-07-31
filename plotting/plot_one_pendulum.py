@@ -18,12 +18,12 @@ from sys_vars import sys_vars
 #inputs are the solution and the sample times and plots the states of the pendulum
 #also inherits one_pendulum_funcs for the base function!
 class one_pendulum_plot:
-    def __init__(self,sol,t,base_pos_x,force_constants):
+    def __init__(self,sol,t,base_pos_x,**kwargs):
         self.sol=sol
         self.t=t
         self.base_pos_x = base_pos_x
         self.sys_vars=sys_vars()
-        self.force_constants = force_constants
+        self.force_constants = kwargs.get('force_constants',0)
 
         #function to create the figure for the pendulum, deifning the bounds
     def create_pendulum_bare_plot(self):
@@ -91,27 +91,31 @@ class one_pendulum_plot:
     
     #return big_theta*np.cos(self.big_omega*self.t)
     #verify is if we are checking the analytical solution
-    def plot_sol(self,verify=None):
+    def plot_sol(self,**kwargs):
+        default_verify=False
+        verify=kwargs.get('verify',default_verify)
+
         #creating the figure
         fig,axs=plt.subplots(2,sharex=True)
+        
+        #if we are not doing the verifications, then we can add the lines corresponding to 
+        if not verify:
+            axs[0].axhline(y=np.pi/2,color='grey')
+            axs[0].axhline(y=-np.pi/2,color='grey')
+            axs[0].axhline(y=np.pi+self.sys_vars.balanced_tolerance,color='r')
+            axs[0].axhline(y=np.pi,color='grey')
+            axs[0].axhline(y=np.pi-self.sys_vars.balanced_tolerance,color='r')
+            axs[0].set_ylim(np.pi-self.sys_vars.balanced_tolerance-0.1,np.pi+self.sys_vars.balanced_tolerance+0.1) 
+
         #adding x and y labels to each subplot
         #print(np.shape(self.sol))
         theta,omega = self.sol[:,0],self.sol[:,1]
         axs[0].set_ylabel(r'$\theta(t)$ [rad]')
-        axs[0].axhline(y=np.pi/2,color='grey')
-        axs[0].axhline(y=-np.pi/2,color='grey')
-        axs[0].axhline(y=np.pi+self.sys_vars.balanced_tolerance,color='r')
-        axs[0].axhline(y=np.pi,color='grey')
-        axs[0].axhline(y=np.pi-self.sys_vars.balanced_tolerance,color='r')
         axs[0].plot(self.t,theta,color='black')
-        axs[0].set_ylim(np.pi-self.sys_vars.balanced_tolerance-0.1,np.pi+self.sys_vars.balanced_tolerance+0.1)
         axs[1].set_ylabel(r'$\omega(t)$ [rad $s^{-1}$]')
         axs[1].set_xlabel('$t$ [s]')
         axs[1].plot(self.t,omega,color='black')
-        #if this function is just called normally to inspect the solution show plot now
-        #otherwise (as if it is used in check_small_angle_sol) we will show the plot once we plot the analytical solution
-        if verify==None:
-            plt.show()
+
         return fig,axs
     
     def small_angle_analytical_sol(self,y0):
@@ -123,7 +127,7 @@ class one_pendulum_plot:
         #pass
     
     def check_small_angle_sol(self,y0):
-        fig,axs = self.plot_sol(True)
+        fig,axs = self.plot_sol(verify=True)
         small_angle_sol=self.small_angle_analytical_sol(y0)
         axs[0].plot(self.t,small_angle_sol,color='grey',linestyle='--')
         plt.show()
