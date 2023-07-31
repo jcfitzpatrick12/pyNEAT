@@ -16,7 +16,7 @@ Currently, we have basic user functionality. Users may customise parameters in _
 * ### Verification: Evolving XORs
   * Running _run_XOR_verification.py_ will perform the XOR validation as described by Stanley and Miikkulainen [1]. __User note: allow_cycles must be set to False, to disable recurrent connections and cycles in the network.__
 * ### Pendulum Balancing
-  * Running _run_pendulum_balancing.py_ will evolve a network capable of balancing a (single) pendulum subject to a small random perturbation (in angle) from the inverted state. __User note: In the current build, it is possible a network may be output not capable of balancing from larger random perturbations. This is not an explicit bug, just a product of the fitness evaluation and how the code outputs the "best" network. The cause is known, and to be fixed in the next version.__
+  * Running _run_pendulum_balancing.py_ will evolve a network capable of balancing a (single) pendulum subject to a small random perturbation (in angle) from the inverted state. __User note: In the current build, it is possible a network may be output not capable of balancing from larger random perturbations. This is not an explicit bug, just a product of the fitness evaluation and how the code outputs the "best" network. The cause is known, and to be fixed in the next version. Note that setting allow_cycles to False may make it more difficult to find a solution.__
  
 ## Changes coming
 * Major optimisation overhaul. Currently genomes in each generation are stored in species using a nested dictionary approach. The adjacency matrix representation of neural networks will allow for a fully vectorised implementation, along with multithreading.
