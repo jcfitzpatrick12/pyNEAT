@@ -37,7 +37,7 @@ _Navigate to the cloned directory:_ \
 cd pyNEAT \
 _Create and set up the conda environment using the provided environment.yml file:_ \
 conda env create -f environment.yml \
-_Activate the environment:_ \
+_To verify the environment has been installed, activate the environment:_ \
 conda activate pyNEAT-env 
 
 With the enviroment activated, the user can refer to __Usage__ section to get started! When executing the code, ensure that the active Python interpreter corresponds to the conda environment that was created. This ensures dependencies and libraries are appropriately resolved from the correct environment.
