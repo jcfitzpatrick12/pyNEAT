@@ -23,24 +23,24 @@ Currently, we have basic user functionality. Users may customise parameters in _
 * Creation of a user interface.
 * Improved data visualisation and animations.
 * Refined fitness evaluation for pendulum balancing.
-* Seperation of different parameter variables in _sys_vars.py_ into different scripts depending on the application. This is required, since some values are dependent on whether we are running XOR validation or pendulum balancing, such as allow_cycles or the length of the pendulum.
+* Seperation of different parameter variables in _sys_vars.py_ into different scripts depending on the application. This is required, since some variables currently need manually altered whether we are running XOR validation or pendulum balancing, such as allow_cycles.
 * Automate pendulum testing of the analytical solutions and, related to the above point, create a seperate sys_vars since the derived solution is dependent on pendulum length for example.
   
 ## Installation
-Note: Ensure that conda is installed on your system. You can verify this by typing conda --version in your command prompt. If you've recently installed conda, you may need to close and reopen the command prompt to recognize the conda command or ensure that conda is added to your PATH.
+Note: Ensure that conda is installed on your system. You can verify this by typing conda --version in your command prompt. If you've recently installed conda, you may need to close and reopen the command prompt to recognize the conda command or ensure that conda is added to your PATH. Replace _path_to_directory_ with the path on your system where you'd like to clone the repository.
 
-_Navigate to your desired directory in the command prompt:_
-cd path_to_directory
-_Clone the pyNEAT repository:_
-git clone https://github.com/jcfitzpatrick12/pyNEAT.git
-_Navigate to the cloned directory:_
-cd pyNEAT
-_Create and set up the conda environment using the provided environment.yml file:_
-conda env create -f environment.yml
-_Activate the environment:_
-conda activate pyNEAT-env
+_Navigate to your desired directory in the command prompt:_ \
+cd path_to_directory \
+_Clone the pyNEAT repository:_ \
+git clone https://github.com/jcfitzpatrick12/pyNEAT.git \
+_Navigate to the cloned directory:_ \
+cd pyNEAT \
+_Create and set up the conda environment using the provided environment.yml file:_ \
+conda env create -f environment.yml \
+_Activate the environment:_ \
+conda activate pyNEAT-env 
 
 With the enviroment activated, the user can refer to __Usage__ section to get started!
 
-References
+## References
 [1] Stanley KO, Miikkulainen R. Evolving neural networks through augmenting topologies. Evol Comput. 2002 Summer;10(2):99-127. doi: 10.1162/106365602320169811. PMID: 12180173.
