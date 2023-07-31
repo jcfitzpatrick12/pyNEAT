@@ -33,7 +33,7 @@ _Navigate to your desired directory in the command prompt:_ \
 cd path_to_directory \
 _Clone the pyNEAT repository:_ \
 git clone https://github.com/jcfitzpatrick12/pyNEAT.git \
-_Navigate to the cloned directory:_ \
+_Navigate to the cloned directory where environment.yml is stored:_ \
 cd pyNEAT \
 _Create and set up the conda environment using the provided environment.yml file:_ \
 conda env create -f environment.yml \
