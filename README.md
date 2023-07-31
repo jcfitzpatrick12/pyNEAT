@@ -16,7 +16,7 @@ Currently, we have basic user functionality.
 * ### Verification: Evolving XORs
   * Running run_XOR_verification.py will perform the XOR validation as described by Stanley and Miikkulainen [1]. 
 * ### Pendulum Balancing
-  * Running run_pendulum_balancing.py will evolve a network capable of balancing a (single) pendulum subject to a random perturbation (in angle and angular velocity) from the inverted state. *User note: In the current build, it is possible a network may be output not capable of balancing from larger random perturbations. This is not an explicit bug, just a product of the fitness evaluation and how the code outputs the "best" network. The cause is known, and to be fixed in the next version. *
+  * Running run_pendulum_balancing.py will evolve a network capable of balancing a (single) pendulum subject to a random perturbation (in angle and angular velocity) from the inverted state. _User note: In the current build, it is possible a network may be output not capable of balancing from larger random perturbations. This is not an explicit bug, just a product of the fitness evaluation and how the code outputs the "best" network. The cause is known, and to be fixed in the next version.._
  
 ## Changes coming
 * User interface
