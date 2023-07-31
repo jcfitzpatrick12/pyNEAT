@@ -27,6 +27,20 @@ Currently, we have basic user functionality. Users may customise parameters in _
 * Automate pendulum testing of the analytical solutions and, related to the above point, create a seperate sys_vars since the derived solution is dependent on pendulum length for example.
   
 ## Installation
+Note: Ensure that conda is installed on your system. You can verify this by typing conda --version in your command prompt. If you've recently installed conda, you may need to close and reopen the command prompt to recognize the conda command or ensure that conda is added to your PATH.
+
+_Navigate to your desired directory in the command prompt:_
+cd path_to_directory
+_Clone the pyNEAT repository:_
+git clone https://github.com/jcfitzpatrick12/pyNEAT.git
+_Navigate to the cloned directory:_
+cd pyNEAT
+_Create and set up the conda environment using the provided environment.yml file:_
+conda env create -f environment.yml
+_Activate the environment:_
+conda activate pyNEAT-env
+
+With the enviroment activated, the user can refer to __Usage__ section to get started!
 
 References
 [1] Stanley KO, Miikkulainen R. Evolving neural networks through augmenting topologies. Evol Comput. 2002 Summer;10(2):99-127. doi: 10.1162/106365602320169811. PMID: 12180173.
