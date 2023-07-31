@@ -40,7 +40,7 @@ conda env create -f environment.yml \
 _Activate the environment:_ \
 conda activate pyNEAT-env 
 
-With the enviroment activated, the user can refer to __Usage__ section to get started!
+With the enviroment activated, the user can refer to __Usage__ section to get started! When executing the code, ensure that the active Python interpreter corresponds to the conda environment that was created. This ensures dependencies and libraries are appropriately resolved from the correct environment.
 
 ## References
 [1] Stanley KO, Miikkulainen R. Evolving neural networks through augmenting topologies. Evol Comput. 2002 Summer;10(2):99-127. doi: 10.1162/106365602320169811. PMID: 12180173.
