@@ -25,6 +25,7 @@ Currently, we have basic user functionality. Users may customise parameters in _
 * Refined fitness evaluation for pendulum balancing.
 * Seperation of _sys_vars.py_ into different scripts depending on the application. This is required, since some variables currently need manually altered whether we are running XOR validation or pendulum balancing, such as allow_cycles.
 * Automate pendulum testing of the analytical solutions and, related to the above point, create a seperate sys_vars since the derived solution is dependent on pendulum length for example.
+* Automated unit testing.
   
 ## Installation
 We describe installation for Windows, and will soon to expand to other operating systems. You must ensure that conda is installed on your system. You can verify this by typing conda --version in your command prompt. If you've recently installed conda, you may need to close and reopen the command prompt to recognize the conda command or ensure that conda is added to your PATH. Replace _path_to_directory_ with the path on your system where you'd like to clone the repository.
