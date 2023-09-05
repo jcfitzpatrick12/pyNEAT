@@ -25,9 +25,11 @@ Currently, we have basic user functionality. Users may customise parameters in _
 * Refined fitness evaluation for pendulum balancing.
 * Seperation of _sys_vars.py_ into different scripts depending on the application. This is required, since some variables currently need manually altered whether we are running XOR validation or pendulum balancing, such as allow_cycles.
 * Automate pendulum testing of the analytical solutions and, related to the above point, create a seperate sys_vars since the derived solution is dependent on pendulum length for example.
+* Automate unit testing.
+
   
 ## Installation
-Note: Ensure that conda is installed on your system. You can verify this by typing conda --version in your command prompt. If you've recently installed conda, you may need to close and reopen the command prompt to recognize the conda command or ensure that conda is added to your PATH. Replace _path_to_directory_ with the path on your system where you'd like to clone the repository.
+We describe installation for Windows, and will soon to expand to other operating systems. You must ensure that conda is installed on your system. You can verify this by typing conda --version in your command prompt. If you've recently installed conda, you may need to close and reopen the command prompt to recognize the conda command or ensure that conda is added to your PATH. Replace _path_to_directory_ with the path on your system where you'd like to clone the repository.
 
 _Navigate to your desired directory in the command prompt:_ \
 cd path_to_directory \
@@ -40,7 +42,7 @@ conda env create -f environment.yml \
 _To verify the environment has been installed, activate the environment:_ \
 conda activate pyNEAT-env 
 
-With the enviroment activated, the user can refer to __Usage__ section to get started! When executing the code, ensure that the active Python interpreter corresponds to the conda environment that was created. This ensures dependencies and libraries are appropriately resolved from the correct environment.
+With the enviroment activated, you can refer to __Usage__ section to get started! When executing the code, ensure that the active Python interpreter corresponds to the conda environment that was created. This ensures dependencies and libraries are appropriately resolved from the correct environment.
 
 ## References
 [1] Stanley KO, Miikkulainen R. Evolving neural networks through augmenting topologies. Evol Comput. 2002 Summer;10(2):99-127. doi: 10.1162/106365602320169811. PMID: 12180173.
