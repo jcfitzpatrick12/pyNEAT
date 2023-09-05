@@ -1,12 +1,5 @@
 '''
-Okay, now onto our XOR validations!
-
-TH
-
-NOTE: WE NEED TO ASSIGN THE GLOBAL MAXIMUM INNOVATION NUMBER TO NEW GENES, NOT THE LOCAL!
-right now, we are assigning the local max innovation number!
-Generalise the weight distribution (function in a particular script, rather than every time calling for a particuar distribution)
-Make add_link_allow_cycles_shortened redundant as this is a nightmare for debugging.
+Run the XOR verifications.
 '''
 
 

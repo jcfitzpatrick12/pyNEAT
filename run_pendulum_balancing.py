@@ -1,8 +1,6 @@
 '''
-Need to check: Why does the base completely stop after each interval? How would we make the base movement continous?
-
-
-write some code that saves the history of evolution and the proposed best genome, but in seperate files related by name!
+Need to check: Why does the base completely stop after each interval? How would we make the base movement continuous? Set the initial condition for the velocity
+of the base to be the final value at the last timestep. Look into further!)
 '''
 
 
