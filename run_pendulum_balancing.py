@@ -14,7 +14,7 @@ from plotting.plot_neat import plotNEAT
 
 #np.random.seed(8)
 #build the genome collction for the XOR validationg
-total_num_networks = 150
+total_num_networks = 300
 #initial network topology
 requested_node_labels = np.array([-1,-1,-1,1])
 requested_edges = np.array([[0,3],[1,3],[2,3]])

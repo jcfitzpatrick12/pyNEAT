@@ -36,7 +36,7 @@ class run_NEAT:
         #first pack away the historical records into a class to keep track of them
         historical_records_dict={}
         historical_records_dict['Maximum Fitness']=self.historical_max_fitnesses_dict
-        historical_records_dict['Number of Networks']=self.historical_num_networks_dict
+        historical_records_dict['Number of Networks']=self.historical_num_networks_dict\
         
         osFuncs().save_data("historical_records_dict",historical_records_dict,allow_pickle=True)
         osFuncs().save_data("proposed_best_genome",self.proposed_best_genome,allow_pickle=True)
