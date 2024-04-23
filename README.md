@@ -2,7 +2,7 @@
 
 ## Important Announcement :loudspeaker:
 
-**This repository (grso) is no longer under active development.**
+**This repository is no longer under active development.**
 
 ## Contents
 * Introduction
